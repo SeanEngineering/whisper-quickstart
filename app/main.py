@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from app.redis_index import redis_client, index
 from app.embeddings import embed
 from app.whisper_service import transcribe
@@ -8,6 +9,14 @@ from redisvl.query import VectorQuery
 import uuid
 
 app = FastAPI(title="Video Semantic Search API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/videos/embed")
