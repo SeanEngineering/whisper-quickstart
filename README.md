@@ -7,6 +7,11 @@ This application uses ffmpeg so make sure to install this before running the mod
   brew install ffmpeg
 ```
 ## Setup Python App
+Note that you will need to use a Python version between 3.9 and 3.14
+```shell
+  python3.11 -m venv .venv
+```
+
 ```shell
 source ./.venv/bin/activate
 ```
