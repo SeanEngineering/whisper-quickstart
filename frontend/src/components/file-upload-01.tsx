@@ -61,7 +61,7 @@ export default function FileUpload01() {
   };
 
   return (
-    <div className='flex items-center justify-center p-10'>
+    <div className='flex items-center justify-center '>
       <Card className='w-full mx-auto max-w-lg bg-background rounded-lg p-0 shadow-md'>
         <CardContent className='p-0'>
           <div className='p-6 pb-4'>
