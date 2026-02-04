@@ -5,7 +5,7 @@ from app.embeddings import embed
 from app.whisper_service import transcribe
 from app.utils import extract_audio
 from app.models import SearchRequest
-from redisvl.query import VectorQuery
+from redisvl.query import VectorQuery, FilterQuery, TextQuery
 import uuid
 
 app = FastAPI(title="Video Semantic Search API")
@@ -46,23 +46,57 @@ async def embed_video(file: UploadFile = File(...)):
 
 @app.post("/videos/search")
 def search(req: SearchRequest):
-    query_vec = embed(req.query)
+
+    query_vec_bytes = embed(req.query)
+
+    k = req.k if req.k is not None else 5
 
     q = VectorQuery(
-        vector=query_vec,
+        vector=query_vec_bytes,
         vector_field_name="embedding",
-        num_results=req.k,
-        return_fields=["content", "start", "end"]
+        num_results=k,
+        return_fields=["content", "start", "end",
+                       "vector_distance"]
     )
 
     results = index.query(q)
+
+    print("Redis search results:", results)
 
     return [
         {
             "content": r["content"],
             "start": float(r["start"]),
             "end": float(r["end"]),
-            "score": r["score"]
+            "score": float(r["vector_distance"])
         }
         for r in results
     ]
+
+
+@app.get("/videos/all")
+def get_all():
+    raw = redis_client.execute_command(
+        "FT.SEARCH", "docs", "*",
+        "RETURN", 3, "content", "start", "end",
+        "LIMIT", 0, 1000
+    )
+
+    count = raw[0]
+    entries = raw[1:]
+
+    results = []
+    for i in range(0, len(entries), 2):
+        doc_id = entries[i]
+        fields = entries[i + 1]
+
+        it = iter(fields)
+        obj = {"id": doc_id}
+        for field, val in zip(it, it):
+            obj[field] = val
+
+        obj["start"] = float(obj.get("start", 0))
+        obj["end"] = float(obj.get("end", 0))
+        results.append(obj)
+
+    return results

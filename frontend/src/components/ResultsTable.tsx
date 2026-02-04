@@ -36,7 +36,7 @@ const ResultsTable = <TData, TValue>({
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} className='text-cent'>
+                  <TableHead key={header.id} className='text-center'>
                     {header.isPlaceholder
                       ? null
                       : flexRender(

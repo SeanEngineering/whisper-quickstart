@@ -43,7 +43,7 @@ redis_client = Redis(host="localhost", port=6379, decode_responses=True)
 schema = IndexSchema.from_dict({
     "index": {
         "name": "docs",
-        "prefix": "doc",
+        "prefix": "vid:",
         "storage_type": "hash"
     },
     "fields": [
@@ -66,4 +66,7 @@ index = SearchIndex(schema, redis_client)
 
 
 def init_index():
-    index.create(overwrite=False)
+    index.create(overwrite=True)
+
+
+init_index()
