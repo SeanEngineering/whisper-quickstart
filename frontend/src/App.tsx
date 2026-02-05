@@ -6,12 +6,13 @@ import { Input } from './components/ui/input';
 import { useEffect } from 'react';
 import { columns, useGetAllFiles, useGetFilesByQuery } from './api/file';
 import { useSearchParams } from 'react-router-dom';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data, mutate: fetchFiles } = useGetFilesByQuery(
     searchParams.get('query') ?? '',
-    5
+    2
   );
 
   const { data: allFiles } = useGetAllFiles();
@@ -34,20 +35,34 @@ function App() {
           <FileUpload01 />
         </section>
         <section className='w-[70%] flex flex-col gap-5'>
-          <div className='flex gap-5'>
-            <Input
-              placeholder='Search for something...'
-              onChange={(e) => handleUpdateSearchQuery(e.target.value)}
-            />
-            <Button className='w-[20%]' onClick={() => fetchFiles()}>
-              Search
-            </Button>
-          </div>
           <section>
-            <h1 className='text-2xl self-start flex'>Results</h1>
-            <div>
-              <ResultsTable data={allFiles || []} columns={columns} />
-            </div>
+            <Tabs defaultValue='all'>
+              <TabsList>
+                <TabsTrigger value='all'>All</TabsTrigger>
+                <TabsTrigger value='search'>Search</TabsTrigger>
+              </TabsList>
+              <TabsContent value='all'>
+                <div className='flex flex-col gap-5'>
+                  <h1 className='text-2xl self-start flex'>All Items</h1>
+                  <ResultsTable data={allFiles || []} columns={columns} />
+                </div>
+              </TabsContent>
+              <TabsContent value='search'>
+                <div className='gap-5 flex flex-col'>
+                  <h1 className='text-2xl self-start flex'>Search</h1>
+                  <div className='flex gap-5'>
+                    <Input
+                      placeholder='Search for something...'
+                      onChange={(e) => handleUpdateSearchQuery(e.target.value)}
+                    />
+                    <Button className='w-[20%]' onClick={() => fetchFiles()}>
+                      Search
+                    </Button>
+                  </div>
+                  <ResultsTable data={data || []} columns={columns} />
+                </div>
+              </TabsContent>
+            </Tabs>
           </section>
         </section>
       </div>
