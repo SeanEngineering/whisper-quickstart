@@ -49,7 +49,7 @@ def search(req: SearchRequest):
 
     query_vec_bytes = embed(req.query)
 
-    k = req.k if req.k is not None else 5
+    k = req.k if req.k is not None else 3
 
     q = VectorQuery(
         vector=query_vec_bytes,

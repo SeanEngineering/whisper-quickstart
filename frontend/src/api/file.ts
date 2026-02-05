@@ -28,7 +28,7 @@ export const useUploadFile = () => {
 export const getFilesByQuery = async (query: string, k?: number): Promise<VideoFile[]> => {
   const res = await api.post('/videos/search', {
     query: query,
-    k: 5
+    k: k ?? 3
   },{
    headers: {
         "Content-Type": "application/json",
